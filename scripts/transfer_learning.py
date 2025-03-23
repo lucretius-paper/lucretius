@@ -6,6 +6,19 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import json
 import time
+import argparse
+
+parser = argparse.ArgumentParser(description="Offline Transfer Learning", formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument("source_machine",help="Name of source machine")
+parser.add_argument("target_machine",help="Name of target machine")
+#parser.add_argument("-n", "--name", type=str, help="Name of model being built; i.e., -n \"t_model\" creates t_model.json, t_model_test.csv, and t_model_train.csv", default="t_model")
+parser.add_argument("-o","--out_path", type=str,help="Path where model is stored; i.e, -o \".\" stores t_model.json in the current directory", default=".")
+parser.set_defaults(verbose=False)
+args = parser.parse_args() 
+out_path = args.out_path
+source_machine = args.source_machine
+target_machine = args.target_machine
+
 
 def get_features():
     return ["thread__park","SetIntField","SetByteArrayRegion","NewStringUTF","gc","vmops","thread__sleep",
@@ -47,8 +60,6 @@ def get_clean_vesta_df(filename):
     df["iteration"] = df.iteration - df.iteration.min()+1
     return df
 
-source_machine = "A"
-target_machine = "B"
 config = ""
 band = 0.02
 vesta_model = get_model(f"./models/dynamic-{source_machine}.json")

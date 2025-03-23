@@ -6,27 +6,34 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import json
 import time
+parser = argparse.ArgumentParser(description="Offline Dynamic Learning", formatter_class=argparse.RawDescriptionHelpFormatter)
+parser.add_argument("machine",help="Name of source machine")
+parser.set_defaults(verbose=False)
+args = parser.parse_args() 
+
 def get_features():
     return ["thread__park","SetIntField","SetByteArrayRegion","NewStringUTF","gc","vmops","thread__sleep",
                  "GetStringLength","GetObjectClass","GetMethodID","method__compile","safepoint","GetObjectArrayElement",
                  "CallVoidMethod","compiled__method__load","NewString",
                  "IsInstanceOf","GetEnv","CallObjectMethod","ReleaseIntArrayElements",
                  "GetByteArrayElements","Throw","compiled__method__unload"]
+
 def get_ratio(prediction, real):
     total_prediction_energy = prediction.sum()
     total_actual_energy = real.sum()
     return np.abs((total_actual_energy - total_prediction_energy) / total_actual_energy)
+
 def get_model(path):
     vesta_model =  XGBRegressor()
     vesta_model.load_model(path)
     return vesta_model
+
 def get_thresholds(path, band=0):
     thresholds = pd.read_csv(path).set_index("benchmark").sum(axis=1).round(3).to_dict()
     for b in thresholds:
-        #if thresholds[b] < band:
-        #    thresholds[b] = band
         thresholds[b] += band
     return thresholds
+
 def get_clean_vesta_df(filename):
     df = pd.read_csv(filename).fillna(-1)
     df = df[df.power <= 10**5]
@@ -45,10 +52,12 @@ def get_clean_vesta_df(filename):
         df["NewString"] = -1
     df["iteration"] = df.iteration - df.iteration.min()+1
     return df
-machine = "A"
+
+machine = args.machine
 config = ""
-vesta_model = get_model(f"./models/full-iter-{machine}.json")
-thresholds = get_thresholds(f"./model_ratios/predictions/full-iter-{machine}.csv", band=0.00)
+vesta_model = get_model(f"../data/models/{machine}.json")
+thresholds = get_thresholds(f"../data/predictions/{machine}.csv", band=0.00)
+
 def train_smaller_model_alt(large_df, features, sizes):
     smaller_df_train = pd.DataFrame()
     smaller_df_test = pd.DataFrame()
@@ -67,8 +76,8 @@ def train_smaller_model_alt(large_df, features, sizes):
     transfer_model.fit(events_df_train, power_df_train)
     return (transfer_model, smaller_df_train.copy(), smaller_df_test.copy())
 features = get_features()
-df = get_clean_vesta_df(f"./aligned_traces/{machine}-aligned.csv").fillna(-1)
-def get_diff(prediction, real):                                                                                                                               
+df = get_clean_vesta_df(f"../data/aligned_traces/{machine}.csv").fillna(-1)
+def get_diff(prediction, real):    
     #total_prediction_energy = prediction.sum() / len(prediction)
     #total_actual_energy = real.sum() / len(real)
     return np.abs(real - prediction).mean()
@@ -107,14 +116,6 @@ while loop:
     ratio_mean_df["std"] = pd.DataFrame(ratios).std()
     ratio_mean_df = ratio_mean_df.sort_index()
     ratio_mean_df = ratio_mean_df.reset_index(names=["benchmark"])
-#     over_threshold = ratio_mean_df[ratio_mean_df["mean"] > .1]
-#     if len(over_threshold) > 0:
-#         loop = True
-#         num_loops += 1
-#         for b in over_threshold["benchmark"]:
-#             sizes[b] = sizes[b] + 1
-#     else:
-#         loop = False
     loop = False
     for b in benchmarks:
         if len(ratio_mean_df[(ratio_mean_df["benchmark"] == b) & (ratio_mean_df["mean"] > thresholds[b])]):
@@ -127,19 +128,19 @@ training_duration = end - start
 data_duration = 0
 for s in sizes:
     data_duration += len(df[(df.benchmark == s) & (df.iteration <= sizes[s])])
-with open (f"./core/model_ratios/time/dynamic-{machine}{config}.csv", "w") as fp:
+with open (f"../data/originals/times/dynamic-{machine}{config}.csv", "w") as fp:
     fp.write("model,collection,training\n")
     fp.write(f"dynamic-{machine},{data_duration},{training_duration:.0f}\n")
-diff_mean = pd.DataFrame(diffs).mean()                                                                                                                
+diff_mean = pd.DataFrame(diffs).mean()
 diff_mean_df = pd.DataFrame(diff_mean).rename(columns={0:"mean"})
 diff_mean_df["std"] = pd.DataFrame(diffs).std()
 diff_mean_df = diff_mean_df.sort_index()
 diff_mean_df = diff_mean_df.reset_index(names=["benchmark"])
-diff_mean_df.to_csv(f"./model_ratios/predictions/{machine}{config}.csv", index=False)
+diff_mean_df.to_csv(f"../data/originals/predictions/{machine}{config}.csv", index=False)
 original_sizes = sizes
-with open(f"./model_ratios/sizes/dynamic-{machine}{config}.json", "w") as fp:
+with open(f"../data/originals/sizes/dynamic-{machine}{config}.json", "w") as fp:
     json.dump(original_sizes, fp)
-ratio_mean_df.to_csv(f"./model_ratios/predictions/dynamic-{machine}{config}.csv", index=False)
-model.save_model(f"./models/dynamic-{machine}{config}.json")
-df_train.to_csv(f"./shap/dynamic-{machine}{config}-training_shap.csv", index=False)
-df_test.to_csv(f"./shap/dynamic-{machine}{config}-testing_shap.csv", index=False)
+ratio_mean_df.to_csv(f"../data/originals/predictions/dynamic-{machine}{config}.csv", index=False)
+model.save_model(f"../data/originals/models/dynamic-{machine}{config}.json")
+df_train.to_csv(f"../data/originals/shap/dynamic-{machine}{config}-training_shap.csv", index=False)
+df_test.to_csv(f"../data/originals/shap/dynamic-{machine}{config}-testing_shap.csv", index=False)
