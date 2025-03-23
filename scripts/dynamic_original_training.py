@@ -55,8 +55,8 @@ def get_clean_vesta_df(filename):
 
 machine = args.machine
 config = ""
-vesta_model = get_model(f"../data/models/{machine}.json")
-thresholds = get_thresholds(f"../data/predictions/{machine}.csv", band=0.00)
+vesta_model = get_model(f"../data/originals/models/{machine}.json")
+thresholds = get_thresholds(f"../data/originals/predictions/{machine}.csv", band=0.00)
 
 def train_smaller_model_alt(large_df, features, sizes):
     smaller_df_train = pd.DataFrame()
@@ -78,10 +78,7 @@ def train_smaller_model_alt(large_df, features, sizes):
 features = get_features()
 df = get_clean_vesta_df(f"../data/aligned_traces/{machine}.csv").fillna(-1)
 def get_diff(prediction, real):    
-    #total_prediction_energy = prediction.sum() / len(prediction)
-    #total_actual_energy = real.sum() / len(real)
     return np.abs(real - prediction).mean()
-    #return np.abs(total_actual_energy - total_prediction_energy)
 start = time.time()
 benchmarks = df.benchmark.unique()
 ratios = {}
@@ -142,5 +139,5 @@ with open(f"../data/originals/sizes/dynamic-{machine}{config}.json", "w") as fp:
     json.dump(original_sizes, fp)
 ratio_mean_df.to_csv(f"../data/originals/predictions/dynamic-{machine}{config}.csv", index=False)
 model.save_model(f"../data/originals/models/dynamic-{machine}{config}.json")
-df_train.to_csv(f"../data/originals/shap/dynamic-{machine}{config}-training_shap.csv", index=False)
-df_test.to_csv(f"../data/originals/shap/dynamic-{machine}{config}-testing_shap.csv", index=False)
+df_train.to_csv(f"../data/originals/splits/dynamic-{machine}{config}-training_shap.csv", index=False)
+df_test.to_csv(f"../data/originals/splits/dynamic-{machine}{config}-testing_shap.csv", index=False)

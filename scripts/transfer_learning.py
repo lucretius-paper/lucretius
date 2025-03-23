@@ -11,13 +11,8 @@ import argparse
 parser = argparse.ArgumentParser(description="Offline Transfer Learning", formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument("source_machine",help="Name of source machine")
 parser.add_argument("target_machine",help="Name of target machine")
-#parser.add_argument("-n", "--name", type=str, help="Name of model being built; i.e., -n \"t_model\" creates t_model.json, t_model_test.csv, and t_model_train.csv", default="t_model")
-parser.add_argument("-o","--out_path", type=str,help="Path where model is stored; i.e, -o \".\" stores t_model.json in the current directory", default=".")
 parser.set_defaults(verbose=False)
 args = parser.parse_args() 
-out_path = args.out_path
-source_machine = args.source_machine
-target_machine = args.target_machine
 
 
 def get_features():
@@ -60,13 +55,15 @@ def get_clean_vesta_df(filename):
     df["iteration"] = df.iteration - df.iteration.min()+1
     return df
 
+source_machine = args.source_machine
+target_machine = args.target_machine
 config = ""
 band = 0.02
-vesta_model = get_model(f"./models/dynamic-{source_machine}.json")
-thresholds = get_thresholds(f"./model_ratios/predictions/dynamic-{source_machine}.csv", band=band)
+vesta_model = get_model(f"../data/originals/models/dynamic-{source_machine}.json")
+thresholds = get_thresholds(f"../data/originals/predictions/dynamic-{source_machine}.csv", band=band)
 
 original_size = dict()
-with open(f"./model_ratios/sizes/dynamic-{source_machine}.json","r") as fp:
+with open(f"../data/originals/sizes/dynamic-{source_machine}.json","r") as fp:
     original_size = json.load(fp)
 
 from sklearn.linear_model import LinearRegression
@@ -91,9 +88,7 @@ def train_smaller_model_alt(large_df, features, original_model, sizes):
     transfer_model.fit(events_df_train, power_diff)
     return (transfer_model, events_df_train.copy(), smaller_df_test.copy())
 features = get_features()
-df = get_clean_vesta_df(f"./aligned_traces/{target_machine}-aligned.csv").fillna(-1)
-#Test portion of VESTA...useful for final transfer test?
-#THRESHOLD = .02
+df = get_clean_vesta_df(f"../data/aligned_traces/{target_machine}-aligned.csv").fillna(-1)
 start = time.time()
 benchmarks = df.benchmark.unique()
 ratios = {}
@@ -111,7 +106,6 @@ while loop:
     transfer_model,df_train,df_test = train_smaller_model_alt(df, features, vesta_model, sizes)
     for bench in benchmarks:
         events_test = df_test[df_test.benchmark == bench]
-        #events_test = df[df.benchmark == bench]
         if len(events_test) == 0:
             continue
         events_test = events_test[features]
@@ -140,13 +134,13 @@ training_duration = end - start
 data_duration = 0
 for s in sizes:
     data_duration += len(df[(df.benchmark == s) & (df.iteration <= sizes[s])])
-with open (f"./core/model_ratios/time/{source_machine}-to-{target_machine}{config}.csv", "w") as fp:
+with open (f"../data/transfers/times/{source_machine}-to-{target_machine}{config}.csv", "w") as fp:
     fp.write("model,collection,training\n")
     fp.write(f"{source_machine}-to-{target_machine},{data_duration},{training_duration:.0f}\n")
 transfer_size = sizes
-with open(f"./core/model_ratios/sizes/{source_machine}-to-{target_machine}{config}.json", "w") as fp:
+with open(f"../data/transfers/sizes/{source_machine}-to-{target_machine}{config}.json", "w") as fp:
     json.dump(transfer_size, fp)
-ratio_mean_df.to_csv(f"./core/model_ratios/predictions/{source_machine}-to-{target_machine}{config}.csv", index=False)
-transfer_model.save_model(f"./core/models/{source_machine}-to-{target_machine}{config}.json")
-df_train.to_csv(f"./core/shap/{source_machine}-to-{target_machine}{config}-training_shap.csv", index=False)
-df_test.to_csv(f"./core/shap/{source_machine}-to-{target_machine}{config}-testing_shap.csv", index=False)
+ratio_mean_df.to_csv(f"../data/transfers/predictions/{source_machine}-to-{target_machine}{config}.csv", index=False)
+transfer_model.save_model(f"../data/transfers/models/{source_machine}-to-{target_machine}{config}.json")
+df_train.to_csv(f"../data/transfers/splits/{source_machine}-to-{target_machine}{config}-training_shap.csv", index=False)
+df_test.to_csv(f"../data/transfers/splits/{source_machine}-to-{target_machine}{config}-testing_shap.csv", index=False)
