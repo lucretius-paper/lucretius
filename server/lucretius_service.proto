@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "lucretius";
+
+service LucretiusService{
+  rpc connect (ConnectionRequest) returns (ConnectionResponse);
+  rpc start (StartRequest) returns (StartResponse);
+  rpc finished (FinishedNotification) returns (Empty);
+  rpc am_i_done (Empty) returns (DoneResponse); //Might not need this
+}
+
+message ConnectionRequest{
+  string application_name = 1; //application name
+  int64 pid = 2; //pid of JVM...will be used for eBPF/BCC
+}
+
+message ConnectionResponse{
+  bool is_available = 1; 
+}
+
+message StartRequest{
+  int64 pid = 1; //Tells the server which app is asking to run
+}
+
+message StartResponse{
+  bool can_run = 1;
+}
+
+message FinishedNotification{
+  int64 pid = 1; //Tells the server which app has finished
+}
+
+message DoneResponse{
+ bool am_done = 1; //Tells the client to shutdown
+}
+
+message Empty{}

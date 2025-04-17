@@ -1,0 +1,24 @@
+{
+    "server": {"probes": "thread__park__begin,thread__park__end,SetIntField__entry,SetIntField__return,SetByteArrayRegion__entry,SetByteArrayRegion__return,NewStringUTF__entry,NewStringUTF__return,gc__begin,gc__end,vmops__begin,vmops__end,thread__sleep__begin,thread__sleep__end,GetStringLength__entry,GetStringLength__return,GetObjectClass__entry,GetObjectClass__return,GetMethodID__entry,GetMethodID__return,method__compile__begin,method__compile__end,safepoint__begin,safepoint__end,GetObjectArrayElement__entry,GetObjectArrayElement__return,CallVoidMethod__entry,CallVoidMethod__return,compiled__method__load,NewString__entry,NewString__return,IsInstanceOf__entry,IsInstanceOf__return,GetEnv__entry,GetEnv__return,CallObjectMethod__entry,CallObjectMethod__return,ReleaseIntArrayElements__entry,ReleaseIntArrayElements__return,GetByteArrayElements__entry,GetByteArrayElements__return,Throw__entry,Throw__return,compiled__method__unload",
+	       "transfer": "Y"
+	      },
+    "client":
+    [
+	{
+	    "suite": "dacapo",
+	    "benchmark": "sunflow",
+	    "size": "default"
+	},
+	{
+	    "suite": "renaissance",
+	    "benchmark": "dec-tree"
+	},
+	{
+	    "suite": "custom",
+	    "benchmark": "my-fibonacci",
+	    "main_class": "lucretius.MyFibonacci",
+	    "args": "42 {iters}"
+	}
+    ]
+    
+}
