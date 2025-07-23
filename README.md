@@ -33,19 +33,35 @@ In order to run the experiments (in a Docker image or otherwise), the host syste
 
 ```
 Machine A
+Intel Xeon Silver 4316 v3 2.30 GHz
+40 Cores
+1 Socket
+65.4 GB
+Debian 6.1.0-0
 
 &
 Machine B
-Dual socket Intel Xeon E5-3630 v4 2.20GHz (40 cores)
-64GB DDR4 RAM
-Debian 11
-Linux kernel 5.17.0-3-amd64
+Intel Xeon E5-3630 v4 2.20GHz
+40 Cores
+2 Sockets
+65.8 GB RAM
+Debian 5.17.0-3
 
 &
 Machine C
+Intel Xeon Gold 6548Y+ 2.50 GHz 
+64 Cores 
+2 Sockets 
+380.4 GB RAM
+Rockey Linux 9.4
 
 &
 Machine D
+AMD Ryzen 5 1600 3.6 GHz
+12 Cores
+1 Socket
+32.8 GB RAM
+Linux Mint 22.1
 
 ```
 
