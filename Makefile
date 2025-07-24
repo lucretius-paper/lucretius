@@ -13,6 +13,7 @@ JNI_INCLUDE = -I$(JAVA_INCLUDE) -I$(JAVA_LINUX_INCLUDE)
 JAVAC=javac
 JAVA_CLASSPATH = lib/dacapo.jar:lib/renaissance-gpl-0.11.0.jar
 
+PYTHON_SERVER_DIR = ./lucretius/server/
 .PHONY: %.o %.class
 %.o: %.c
 	$(CC) -c -o $@ $^ $(CFLAGS) $(JNI_INCLUDE)
@@ -35,7 +36,7 @@ native: libRapl.so libMonotonic.so
 	@echo 'built native libraries'
 
 proto:	server/lucretius_service.proto
-	python -m grpc_tools.protoc -I./server/ --python_out=./server/ --pyi_out=./server/ --grpc_python_out=./server/ ./server/lucretius_service.proto
+	python -m grpc_tools.protoc -I$(PYTHON_SERVER_DIR) --python_out=$(PYTHON_SERVER_DIR) --pyi_out=$(PYTHON_SERVER_DIR) --grpc_python_out=$(PYTHON_SERVER_DIR) $(PYTHON_SERVER_DIR)lucretius_service.proto
 
 clean:
 	rm -r $(TARGET) ./server/lucretius_service*.py*
