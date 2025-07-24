@@ -36,7 +36,7 @@ native: libRapl.so libMonotonic.so
 	@echo 'built native libraries'
 
 proto:	server/lucretius_service.proto
-	python -m grpc_tools.protoc -I$(PYTHON_SERVER_DIR) --python_out=$(PYTHON_SERVER_DIR) --pyi_out=$(PYTHON_SERVER_DIR) --grpc_python_out=$(PYTHON_SERVER_DIR) $(PYTHON_SERVER_DIR)lucretius_service.proto
+	python3 -m grpc_tools.protoc -I$(PYTHON_SERVER_DIR) --python_out=$(PYTHON_SERVER_DIR) --pyi_out=$(PYTHON_SERVER_DIR) --grpc_python_out=$(PYTHON_SERVER_DIR) $(PYTHON_SERVER_DIR)lucretius_service.proto
 
 clean:
 	rm -r $(TARGET) ./server/lucretius_service*.py*
