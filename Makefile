@@ -14,8 +14,8 @@ JAVAC=javac
 JAVA_CLASSPATH = lib/dacapo.jar:lib/renaissance-gpl-0.11.0.jar
 
 .PHONY: %.o %.class
-
 %.o: %.c
+	@echo "Include: $(JNI_INCLUDE)"
 	$(CC) -c -o $@ $^ $(CFLAGS) $(JNI_INCLUDE)
 
 %.class: %.java
