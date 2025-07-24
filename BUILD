@@ -13,3 +13,11 @@ java_binary(
     runtime_deps = ["@grpc-java//netty"],
     deps = ["//:benchmarks","//src/main/proto/lucretius:lucretius_service_java_protos", "@grpc-java//api", "//src/main/proto/lucretius:lucretius_service_java_grpc"],
 )
+
+java_binary(
+    name = "fib",
+    srcs = glob(["src/main/java/lucretius/*.java"]),
+    main_class = "lucretius.MyFibonacci",
+    runtime_deps = ["@grpc-java//netty"],
+    deps = ["//:benchmarks","//src/main/proto/lucretius:lucretius_service_java_protos", "@grpc-java//api", "//src/main/proto/lucretius:lucretius_service_java_grpc"],
+)
