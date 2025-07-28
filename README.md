@@ -16,6 +16,7 @@ Developing energy-aware applications is an important approach to promoting susta
   - [PowerCap](#powercap)
   - [bcc](#bcc)
   - [Java with DTrace](#java-with-dtrace)
+- [Running with Docker](#running-with-docker)
 - [Running from Source](#running-from-source)
 - [Experiment Reproduction](#experiment-reproduction)
   - [Adding a custom benchmark](#adding-a-custom-benchmark)
@@ -140,7 +141,23 @@ Finally, you may need to mount [`debugfs`](https://docs.kernel.org/filesystems/d
 
 ## Java with Dtrace
 
-Finally, you will need a version of `java` with [`DTrace Probes`](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/dtrace.html) enabled, which will expose the dtrace probes as `UDSTs` that can be instrumented with `bcc`. Our official repository contains a pre-built version of `openjdk-19` that was used to run our experiments. If you would like to use a different version or you are running this from the github repository, you need to re-compile from [source](https://github.com/openjdk/jdk/blob/master/doc/building.md) with the `--enable-dtrace` flag set.
+Finally, you will need a version of `java` with [`DTrace Probes`](https://docs.oracle.com/javase/8/docs/technotes/guides/vm/dtrace.html) enabled, which will expose the dtrace probes as `UDSTs` that can be instrumented with `bcc`. Our official repository contains a pre-built version of `openjdk-19` that was used to run our experiments (it can be found in `/lucretius/dtrace-jdk/bin/java`). If you would like to use a different version or you are running this from the github repository, you need to re-compile from [source](https://github.com/openjdk/jdk/blob/master/doc/building.md) with the `--enable-dtrace` flag set.
+
+# Running with Docker
+
+We provide a Dockerfile in this repository that should correctly set up the environment to have access to both `msr` and `bpf` so you can run the experiments. You will need to run it with the following flags for everything to work:
+
+```
+sudo docker build . -t lucretius
+sudo docker run -it --rm  --privileged \
+    -v /lib/modules:/lib/modules:ro \
+    -v /sys/kernel/debug:/sys/kernel/debug:rw \
+    -v /usr/src:/usr/src:ro \
+    -v /etc/localtime:/etc/localtime:ro \
+    vesta
+```
+
+NOTE: If you are trying to reproduce the experiments from the github repo, you will need to get the benchmark jars before building the Docker image, which can be done with `bash setup_benchmarks.sh`.
 
 # Running from Source
 
@@ -173,6 +190,25 @@ bash ./start_clients.sh
 ```
 
 Once the test completes successfully, you are ready to run the experiments.
+
+If you are using the Docker image there are a few bash aliases supplied to make it easier to use `screen` for those who are unfamiliar. The `create_client` command will create a screen that can be attached to with `join_client` to start up client experiments (`create_server` and `join_server` can be used for launching the server process). The workflow would look something like this:
+```bash
+bash scripts/my_fibonacci.sh $PWD/dtrace-jdk/bin/java
+cd my-fibonacci/
+create_server
+join_server
+#Now you are in the server screen
+bash start_server.sh
+# Use Ctrl+A D to detach from the screen
+create_client
+join_client
+bash start_client.sh
+# Use Ctrl+A D
+join_server
+#Hit Enter to start LucRETius and wait until it shuts down
+#Use Ctrl+A D
+ls #to view newly created files
+```
 
 ## Experiment Definition
 
@@ -230,7 +266,7 @@ The `target` folder needs to contain a `ratios.csv` file which will need to cont
 ```
 Each benchmark will run until all three meet the 10% threshold. If you want to run a transfer then you'll also need a `sizes.json` file and a `model.json` file (which will be generated for you if you train a dynamic original model).
 
-You can then navigate to the folder given for `exp_path` and you'll find a directory which contains a folder for each application given with `server_config` and two bash scripts for running `LucRETius`: `run_server.sh` and `run_clients.sh`. You'll need to run these in two separate bash instances, so we recommend using a window management system like ![screen](https://www.gnu.org/software/screen/manual/screen.htmlhttps://www.gnu.org/software/screen/manual/screen.html). Once you have a screen (or a separate bash instance) running for the `server` and the `clients` you can run the system with:
+You can then navigate to the folder given for `exp_path` and you'll find a directory which contains a folder for each application given with `server_config` and two bash scripts for running `LucRETius`: `run_server.sh` and `run_clients.sh`. You'll need to run these in two separate bash instances, so we recommend using a window management system like ![screen](https://www.gnu.org/software/screen/manual/screen.html). Once you have a screen (or a separate bash instance) running for the `server` and the `clients` you can run the system with:
 
 ```bash
 	bash run_server.sh
@@ -240,9 +276,9 @@ and
 	bash run_clients.sh
 ```
 
-`run_server.sh` will spin up the `LucRETius` server and `run_clients.sh` will start each application one by one and connect them to the server. Once all clients have been connected you can start `LucRETius` by hitting enter while on the server window.
+`run_server.sh` will spin up the `LucRETius` server and `run_clients.sh` will start each application one by one and connect them to the server. Once all clients have been connected you can start `LucRETius` by hitting ENTER while on the server window.
 
-NOTE: If you are running this from outside of a Docker image, make sure that you execute `scripts/run_experiments` as sudo (`sudo bash scripts/run_experiments.sh "${PWD}/data"`)
+NOTE: If you are running this from outside of a Docker image, make sure that you execute `scripts/run_experiments` as sudo (`sudo bash run_server.sh`/`sudo bash run_clients.sh`)
 
 ## Adding a custom benchmark
 
@@ -289,6 +325,7 @@ A full run of `LucRETius` will produce
 	- aligned data used for testing: `testing.csv`
 
 ## Accuracy Plot
+
 
 ## Overhead Plots
 
