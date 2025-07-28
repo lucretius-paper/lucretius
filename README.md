@@ -273,7 +273,7 @@ The `target` folder needs to contain a `ratios.csv` file which will need to cont
 ```
 Each benchmark will run until all three meet the 10% threshold. If you want to run a transfer then you'll also need a `sizes.json` file and a `model.json` file (which will be generated for you if you train a dynamic original model).
 
-You can then navigate to the folder given for `exp_path` and you'll find a directory which contains a folder for each application given with `server_config` and two bash scripts for running `LucRETius`: `run_server.sh` and `run_clients.sh`. You'll need to run these in two separate bash instances, so we recommend using a window management system like ![screen](https://www.gnu.org/software/screen/manual/screen.html). Once you have a screen (or a separate bash instance) running for the `server` and the `clients` you can run the system with:
+You can then navigate to the folder given for `exp_path` and you'll find a directory which contains a folder for each application given with `server_config` and two bash scripts for running `LucRETius`: `run_server.sh` and `run_clients.sh`. You'll need to run these in two separate bash instances, so we recommend using a window management system like [screen](https://www.gnu.org/software/screen/manual/screen.html). Once you have a screen (or a separate bash instance) running for the `server` and the `clients` you can run the system with:
 
 ```bash
 	bash run_server.sh
