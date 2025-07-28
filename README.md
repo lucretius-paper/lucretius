@@ -154,7 +154,7 @@ sudo docker run -it --rm  --privileged \
     -v /sys/kernel/debug:/sys/kernel/debug:rw \
     -v /usr/src:/usr/src:ro \
     -v /etc/localtime:/etc/localtime:ro \
-    vesta
+    lucretius
 ```
 
 NOTE: If you are trying to reproduce the experiments from the github repo, you will need to get the benchmark jars before building the Docker image, which can be done with `bash setup_benchmarks.sh`.
