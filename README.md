@@ -318,11 +318,11 @@ Next, recompile the tool with `bazel build lucretius_deploy.jar`; if you have th
 ## Modeling
 
 A full run of `LucRETius` will produce
-	- a trained `XGBoost` model in the experiment directory: `model.json`
-	- a list of model accuracies per application: `ratios.csv`
-	- a list of iterations per application: `sizes.json`
-	- aligned data used for training: `training.csv`
-	- aligned data used for testing: `testing.csv`
+- a trained `XGBoost` model in the experiment directory: `model.json`
+- a list of model accuracies per application: `ratios.csv`
+- a list of iterations per application: `sizes.json`
+- aligned data used for training: `training.csv`
+- aligned data used for testing: `testing.csv`
 
 ## Accuracy Plot
 This script replicates Fig. 7a which shows the MAPE for a set of benchmarks.
