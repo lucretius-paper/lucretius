@@ -3,10 +3,17 @@
 LucRETius is a power modeling system that uses *language runtime events* for portable platform prediction. Below is the abstract for the publication.
 
 ```
-
-Developing energy-aware applications is an important approach to promoting sustainable computing. This paper addresses a fundamental and challenging problem faced by developers and deployers: how to port a power model built for one machine to another? We present LucRETius, a novel approach toward portable power modeling through transfer learning, where a pre-trained power model on one machine can serve as a teacher to help construct a student model on another machine rapidly. The key insight that enables transfer learning is that the layer of application runtimes can abstract away the machine-specific details, so that two machines—despite different hardware and software system configurations—are unified with a common set of runtime events that can serve as features for transfer learning. We evaluate LucRETius through bi-directional transfers across 4 machines, and we show the power models built by LucRETius have a median percentage error of 1.01%-1.75% when used for predicting the energy consumption of 36 real-world JVM-based applications. Compared with training from scratch, LucRETius can lead to a speed up of 8.07×.
-
-
+Developing energy-aware applications is an important approach to promoting sustainable computing. 
+This paper addresses a fundamental and challenging problem faced by developers and deployers: how to port 
+a power model built for one machine to another? We present LucRETius, a novel approach toward portable 
+power modeling through transfer learning, where a pre-trained power model on one machine can serve as a teacher
+to help construct a student model on another machine rapidly. The key insight that enables transfer learning is 
+that the layer of application runtimes can abstract away the machine-specific details, so that two machines—despite
+different hardware and software system configurations—are unified with a common set of runtime events that can
+serve as features for transfer learning. We evaluate LucRETius through bi-directional transfers across 4 machines,
+and we show the power models built by LucRETius have a median percentage error of 1.01%-1.75% when used for
+predicting the energy consumption of 36 real-world JVM-based applications. Compared with training from scratch, 
+LucRETius can lead to a speed up of 8.07×.
 ```
 
 # Table of Contents
