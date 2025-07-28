@@ -325,7 +325,17 @@ A full run of `LucRETius` will produce
 	- aligned data used for testing: `testing.csv`
 
 ## Accuracy Plot
+This script replicates Fig. 7a which shows the MAPE for a set of benchmarks.
 
+The structure for calling the script is as follows: `python3 scripts/graphs/accuracy_plot.py <ratios.csv> --out_path=<location of pdf to create>`
+
+The graph `MAPE.pdf` can be created with the following:
+
+```bash
+python3 scripts/graphs/accuracy_plot.py \
+    --out_path="${PWD}/my-fibonacci/" \
+    "${PWD}/my-fibonacci/ratios.csv"
+```
 
 ## Overhead Plots
 
