@@ -5,7 +5,7 @@ import matplotlib.ticker as mtick
 from matplotlib.ticker import PercentFormatter
 import pandas as pd
 
-parser = argparse.ArgumentParser(description="Inference Stage Parser", formatter_class=argparse.RawDescriptionHelpFormatter)
+parser = argparse.ArgumentParser(description="Accuracy Plot Generator", formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument("ratio_data", help="Path to ratios.csv")
 parser.add_argument("-o","--out_path", type=str,help="Path to where the plot should be stored", default="./")
 parser.set_defaults(verbose=False)

@@ -344,12 +344,16 @@ python3 scripts/graphs/accuracy_plot.py \
     "${PWD}/my-fibonacci/ratios.csv"
 ```
 
-## Overhead Plots
+## Data Collection Speedup
+This script replicates Fig 7b
 
+The structure for calling the script is as follows: `python3 scripts/graphs/speedup_plot.py <original_sizes.json> <comparison_sizes.json> --out_path=<location of pdf to create>`
 
-## Line Graphs
+The graph `SPEEDUP.pdf` can be created with the following:
 
-
-## SHAP Plots
-
-## Tree Visualizer
+```bash
+python3 scripts/graphs/speedup_plot.py \
+    --out_path="${PWD}/my-fibonacci/" \
+    "${PWD}/data/originals/sizes.csv" \
+	"${PWD}/my-fibonacci/sizes.csv"
+```
